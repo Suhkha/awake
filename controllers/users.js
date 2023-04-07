@@ -6,9 +6,17 @@ const User = require("../models/user");
 const usersGet = async (req, res = response) => {
   //const { q, name = "no name", lastname } = req.query;
   const { limit = 5, from = 0 } = req.query;
-  const users = await User.find().skip(from).limit(limit);
+  const args = { status: true };
 
-  res.json(users);
+  const [total, users] = await Promise.all([
+    User.countDocuments(args),
+    User.find(args).skip(from).limit(limit),
+  ]);
+
+  res.json({
+    total,
+    users,
+  });
 };
 
 const usersPost = async (req, res = response) => {
