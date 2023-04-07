@@ -47,10 +47,16 @@ const usersPut = async (req, res = response) => {
   res.json(user);
 };
 
-const usersDelete = (req, res = response) => {
-  res.json({
-    message: "delete users",
-  });
+const usersDelete = async (req, res = response) => {
+  const { id } = req.params;
+
+  //delete manually
+  //const user = await User.findByIdAndDelete(id);
+
+  //better update the user state
+  const user = await User.findByIdAndUpdate(id, { status: false });
+
+  res.json(user);
 };
 module.exports = {
   usersGet,
