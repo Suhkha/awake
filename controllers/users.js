@@ -3,14 +3,19 @@ const bcryptjs = require("bcryptjs");
 
 const User = require("../models/user");
 
-const usersGet = (req, res = response) => {
-  const { q, name = "no name", lastname } = req.query;
+const usersGet = async (req, res = response) => {
+  //const { q, name = "no name", lastname } = req.query;
+  const { limit = 5, from = 0 } = req.query;
+  const args = { status: true };
+
+  const [total, users] = await Promise.all([
+    User.countDocuments(args),
+    User.find(args).skip(from).limit(limit),
+  ]);
 
   res.json({
-    message: "get users",
-    q,
-    name,
-    lastname,
+    total,
+    users,
   });
 };
 
@@ -24,9 +29,7 @@ const usersPost = async (req, res = response) => {
 
   await user.save();
 
-  res.json({
-    user,
-  });
+  res.json(user);
 };
 
 const usersPut = async (req, res = response) => {
@@ -41,9 +44,7 @@ const usersPut = async (req, res = response) => {
 
   const user = await User.findByIdAndUpdate(id, userData);
 
-  res.json({
-    user,
-  });
+  res.json(user);
 };
 
 const usersDelete = (req, res = response) => {
