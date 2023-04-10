@@ -49,6 +49,7 @@ const usersPut = async (req, res = response) => {
 
 const usersDelete = async (req, res = response) => {
   const { id } = req.params;
+  const uid = req.uid;
 
   //delete manually
   //const user = await User.findByIdAndDelete(id);
@@ -56,7 +57,7 @@ const usersDelete = async (req, res = response) => {
   //better update the user state
   const user = await User.findByIdAndUpdate(id, { status: false });
 
-  res.json(user);
+  res.json({ user, uid });
 };
 module.exports = {
   usersGet,
