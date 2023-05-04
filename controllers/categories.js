@@ -7,7 +7,7 @@ const categoriesGet = async (req, res = response) => {
 
   const [total, categories] = await Promise.all([
     Category.countDocuments(args),
-    Category.find(args).skip(from).limit(limit),
+    Category.find(args).populate("user", "name").skip(from).limit(limit),
   ]);
 
   res.status(201).json({
@@ -18,12 +18,12 @@ const categoriesGet = async (req, res = response) => {
 
 const categoryByIdGet = async (req, res = response) => {
   const { id } = req.params;
-  const category = await Category.findById(id);
+  const category = await Category.findById(id).populate("user", "name");
   res.status(201).json(category);
 };
 
 const categoryPost = async (req, res = response) => {
-  const name = req.body.name;
+  const name = req.body.name.toUpperCase();
 
   const categoryDB = await Category.findOne({ name });
 
@@ -46,16 +46,23 @@ const categoryPost = async (req, res = response) => {
 
 const categoryPut = async (req, res = response) => {
   const { id } = req.params;
-  const { _id, ...categoryData } = req.body;
+  const { _id, status, user, ...categoryData } = req.body;
 
-  const category = await Category.findByIdAndUpdate(id, categoryData);
+  categoryData.name = categoryData.name.toUpperCase();
+  categoryData.user = req.user._id;
+
+  const category = await Category.findByIdAndUpdate(id, categoryData, {
+    new: true,
+  }).populate("user", "name");
   res.status(201).json(category);
 };
 
 const categoryDelete = async (req, res = response) => {
   const { id } = req.params;
 
-  const category = await Category.findByIdAndUpdate(id, { status: false });
+  const category = await Category.findByIdAndUpdate(id, {
+    status: false,
+  }).populate("user", "name");
   res.status(201).json(category);
 };
 
