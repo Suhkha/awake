@@ -20,6 +20,7 @@ router.get(
   [
     check("id", "Invalid Mongo ID").isMongoId(),
     check("id").custom(isCategoryValidById),
+    validateFields,
   ],
   categoryByIdGet
 );
@@ -42,6 +43,7 @@ router.put(
     check("id", "Invalid Mongo ID").isMongoId(),
     check("id").custom(isCategoryValidById),
     validateJWT,
+    validateFields,
   ],
   categoryPut
 );
@@ -53,6 +55,7 @@ router.delete(
     check("id", "Invalid Mongo ID").isMongoId(),
     check("id").custom(isCategoryValidById),
     validateJWT,
+    validateFields,
   ],
   categoryDelete
 );
