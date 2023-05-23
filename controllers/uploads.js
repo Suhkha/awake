@@ -1,3 +1,5 @@
+const path = require("path");
+const fs = require("fs");
 const { response } = require("express");
 const { uploadFile } = require("../helpers");
 const { User, Product } = require("../models");
@@ -42,6 +44,21 @@ const updateFile = async (req, res = response) => {
     default:
       return res.status(500).json({ message: "wrong collection" });
   }
+
+  try {
+    if (model.image) {
+      const imagePath = path.join(
+        __dirname,
+        "../uploads",
+        collection,
+        model.image
+      );
+
+      if (fs.existsSync(imagePath)) {
+        fs.unlinkSync(imagePath);
+      }
+    }
+  } catch (error) {}
 
   const name = await uploadFile(req.files, undefined, collection);
   model.image = name;
