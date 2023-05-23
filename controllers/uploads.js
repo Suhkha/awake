@@ -45,20 +45,18 @@ const updateFile = async (req, res = response) => {
       return res.status(500).json({ message: "wrong collection" });
   }
 
-  try {
-    if (model.image) {
-      const imagePath = path.join(
-        __dirname,
-        "../uploads",
-        collection,
-        model.image
-      );
+  if (model.image) {
+    const imagePath = path.join(
+      __dirname,
+      "../uploads",
+      collection,
+      model.image
+    );
 
-      if (fs.existsSync(imagePath)) {
-        fs.unlinkSync(imagePath);
-      }
+    if (fs.existsSync(imagePath)) {
+      fs.unlinkSync(imagePath);
     }
-  } catch (error) {}
+  }
 
   const name = await uploadFile(req.files, undefined, collection);
   model.image = name;
@@ -68,7 +66,54 @@ const updateFile = async (req, res = response) => {
   res.json({ model });
 };
 
+const getFile = async (req, res = response) => {
+  const { id, collection } = req.params;
+  let model;
+
+  switch (collection) {
+    case "users":
+      model = await User.findById(id);
+
+      if (!model) {
+        return res.status(400).json({
+          message: "user id does not exists",
+        });
+      }
+      break;
+
+    case "products":
+      model = await Product.findById(id);
+
+      if (!model) {
+        return res.status(400).json({
+          message: "product id does not exists",
+        });
+      }
+      break;
+
+    default:
+      return res.status(500).json({ message: "wrong collection" });
+  }
+
+  if (model.image) {
+    const imagePath = path.join(
+      __dirname,
+      "../uploads",
+      collection,
+      model.image
+    );
+
+    if (fs.existsSync(imagePath)) {
+      return res.sendFile(imagePath);
+    }
+  }
+
+  const placeholder = path.join(__dirname, "../assets/placeholder-bts.jpg");
+  return res.sendFile(placeholder);
+};
+
 module.exports = {
   uploadFiles,
   updateFile,
+  getFile,
 };
