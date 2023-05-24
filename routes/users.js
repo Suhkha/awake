@@ -7,11 +7,7 @@ const {
   hasRole,
 } = require("../middlewares");
 
-const {
-  isValidRole,
-  isValidEmail,
-  isUserValidById,
-} = require("../helpers/db-validators");
+const { isValidRole, isValidEmail, isUserValidById } = require("../helpers");
 
 const {
   usersGet,
