@@ -7,123 +7,6 @@ const { User, Product } = require("../models");
 const cloudinary = require("cloudinary").v2;
 cloudinary.config(process.env.CLOUDINARY_URL);
 
-/**
- * Only for local env
- */
-const uploadFiles = async (req, res = response) => {
-  try {
-    //const name = await uploadFile(req.files, ["txt", "md"], "texts");
-    const name = await uploadFile(req.files, undefined, "bts");
-    res.json({
-      name,
-    });
-  } catch (message) {
-    res.status(400).json({ message });
-  }
-};
-
-/**
- * Only for local env
-const updateFile = async (req, res = response) => {
-  const { id, collection } = req.params;
-  let model;
-
-  switch (collection) {
-    case "users":
-      model = await User.findById(id);
-
-      if (!model) {
-        return res.status(400).json({
-          message: "user id does not exists",
-        });
-      }
-      break;
-
-    case "products":
-      model = await Product.findById(id);
-
-      if (!model) {
-        return res.status(400).json({
-          message: "product id does not exists",
-        });
-      }
-      break;
-
-    default:
-      return res.status(500).json({ message: "wrong collection" });
-  }
-
-  if (model.image) {
-    const imagePath = path.join(
-      __dirname,
-      "../uploads",
-      collection,
-      model.image
-    );
-
-    if (fs.existsSync(imagePath)) {
-      fs.unlinkSync(imagePath);
-    }
-  }
-
-  const name = await uploadFile(req.files, undefined, collection);
-  model.image = name;
-
-  await model.save();
-
-  res.json({ model });
-};
-*/
-
-/**
- * Only for local env
- */
-const getFile = async (req, res = response) => {
-  const { id, collection } = req.params;
-  let model;
-
-  switch (collection) {
-    case "users":
-      model = await User.findById(id);
-
-      if (!model) {
-        return res.status(400).json({
-          message: "user id does not exists",
-        });
-      }
-      break;
-
-    case "products":
-      model = await Product.findById(id);
-
-      if (!model) {
-        return res.status(400).json({
-          message: "product id does not exists",
-        });
-      }
-      break;
-
-    default:
-      return res.status(500).json({ message: "wrong collection" });
-  }
-
-  if (model.image) {
-    const imagePath = path.join(
-      __dirname,
-      "../uploads",
-      collection,
-      model.image
-    );
-
-    if (fs.existsSync(imagePath)) {
-      return res.sendFile(imagePath);
-    }
-  }
-
-  const placeholder = path.join(__dirname, "../assets/placeholder-bts.jpg");
-  return res.sendFile(placeholder);
-};
-
 const updateFileWithCloudinary = async (req, res = response) => {
   const { id, collection } = req.params;
   let model;
@@ -170,8 +53,43 @@ const updateFileWithCloudinary = async (req, res = response) => {
   res.json({ model });
 };
 
+const getFile = async (req, res = response) => {
+  const { id, collection } = req.params;
+  let model;
+
+  switch (collection) {
+    case "users":
+      model = await User.findById(id);
+
+      if (!model) {
+        return res.status(400).json({
+          message: "user id does not exists",
+        });
+      }
+      break;
+
+    case "products":
+      model = await Product.findById(id);
+
+      if (!model) {
+        return res.status(400).json({
+          message: "product id does not exists",
+        });
+      }
+      break;
+
+    default:
+      return res.status(500).json({ message: "wrong collection" });
+  }
+
+  if (model.image) {
+    res.send(model.image);
+  }
+  const placeholder = path.join(__dirname, "../assets/placeholder-bts.jpg");
+  return res.sendFile(placeholder);
+};
+
 module.exports = {
-  uploadFiles,
   updateFileWithCloudinary,
   getFile,
 };

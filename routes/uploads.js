@@ -10,8 +10,6 @@ const {
 
 const router = Router();
 
-router.post("/", uploadFiles, validateFile);
-
 router.put(
   "/:collection/:id",
   [
