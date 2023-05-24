@@ -2,7 +2,11 @@ const { Router } = require("express");
 const { check } = require("express-validator");
 const { allowedCollections } = require("../helpers");
 const { validateFields, validateFile } = require("../middlewares");
-const { uploadFiles, updateFile, getFile } = require("../controllers/uploads");
+const {
+  uploadFiles,
+  updateFileWithCloudinary,
+  getFile,
+} = require("../controllers/uploads");
 
 const router = Router();
 
@@ -18,7 +22,7 @@ router.put(
     ),
     validateFields,
   ],
-  updateFile
+  updateFileWithCloudinary
 );
 
 router.get(
